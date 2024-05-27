@@ -4,8 +4,9 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import myUserRoute from "./routes/myUserRoute";
 import { v2 as cloudinary } from "cloudinary";
-import myRestaurantRoute from './routes/MyRestaurantRoute'
-import restaurantRoute from "./routes/RestaurantRoute"
+import myRestaurantRoute from "./routes/MyRestaurantRoute";
+import restaurantRoute from "./routes/RestaurantRoute";
+import orderRoute from "./routes/OrderRoute";
 
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING as string)
@@ -22,18 +23,25 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+
 const app = express();
+
+app.use("/api/order/checkout/webhook", express.raw({ type: "*/*" }));
+
 app.use(express.json());
 app.use(cors());
+
+
 
 app.get("/health", async (req: Request, res: Response) => {
   res.send({ message: "health ok!" });
 });
 
 app.use("/api/my/user", myUserRoute);
-app.use("/api/my/restaurant", myRestaurantRoute )
-app.use("/api/restaurant", restaurantRoute)
+app.use("/api/my/restaurant", myRestaurantRoute);
+app.use("/api/restaurant", restaurantRoute);
+app.use("/api/order", orderRoute);
 
-app.listen(6000, () => {
-  console.log("Server Started on localhost : 6000");
+app.listen(8000, () => {
+  console.log("Server Started on localhost : 8000");
 });
